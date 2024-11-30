@@ -25,7 +25,7 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
       }
 
       const data = await response.json();
-      return data.articles || [];
+      return data.articles.filter(item => item.title !== "[Removed]") || [];
     } catch (error) {
       console.error("Error fetching the news:", error);
       return [];
@@ -100,6 +100,7 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
         isOpen={isModalOpen}
         onClose={searchCloseHandler}
         title={`Search Query: "${searchQuery}"`}
+        customClassName="items-start"
       >
         <h2 className="text-2xl font-medium">Result:</h2>
         {isLoading ? (

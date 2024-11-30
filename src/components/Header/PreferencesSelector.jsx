@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 
 const PreferencesSelector = () => {
   const [preferences, setPreferences] = useState({
-    sources: [],
+    sources: [], // Updated to allow handling as an array
     categories: [],
     authors: [],
   });
 
   const options = {
     sources: ['Source 1', 'Source 2', 'Source 3'],
-    categories: ['Category 1', 'Category 2', 'Category 3'],
+    categories: ['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'],
     authors: ['Author 1', 'Author 2', 'Author 3'],
   };
 
@@ -17,24 +17,32 @@ const PreferencesSelector = () => {
   useEffect(() => {
     const savedPreferences = localStorage.getItem('preferences');
     if (savedPreferences) {
-        try {
-            setPreferences(JSON.parse(savedPreferences));
-            console.log(preferences)
-        } catch (error) {
-            console.error('Failed to parse preferences from localStorage:', error);
-        }
+      try {
+        const parsedPreferences = JSON.parse(savedPreferences);
+        setPreferences({
+          ...parsedPreferences,
+          sources: parsedPreferences.sources?.split(',') || [],
+        });
+        console.log('Loaded preferences:', parsedPreferences);
+      } catch (error) {
+        console.error('Failed to parse preferences from localStorage:', error);
+      }
     }
-}, []);
+  }, []);
 
   // Save preferences to localStorage whenever they change
   useEffect(() => {
     const timeout = setTimeout(() => {
-      localStorage.setItem('preferences', JSON.stringify(preferences));
-      console.log('Saved preferences to localStorage:', preferences);
+      const updatedPreferences = {
+        ...preferences,
+        sources: preferences.sources.join(','),
+      };
+      localStorage.setItem('preferences', JSON.stringify(updatedPreferences));
+      console.log('Saved preferences to localStorage:', updatedPreferences);
     }, 500); // Debounce updates by 500ms
-    // return () => clearTimeout(timeout);
+
+    return () => clearTimeout(timeout); // Cleanup timeout
   }, [preferences]);
-  
 
   const handleChange = (type, value) => {
     setPreferences((prev) => {

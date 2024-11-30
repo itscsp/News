@@ -7,12 +7,19 @@ export default {
   theme: {
     extend: {
       container: {
-        maxWidth:"100%",
-        center:true,
-        padding:"2rem",
-      }
+        center: true,
+        padding: "2rem",
+      },
+    },
+    container: {
+      center: true,
+      screens: {
+        sm: "100%", // Full width on small screens
+        md: "768px", // Adjust width on medium screens
+        lg: "1024px", // Adjust width on large screens
+        xl: "1200px", // 1200px max width for extra-large screens
+      },
     },
   },
   plugins: [],
 }
-
