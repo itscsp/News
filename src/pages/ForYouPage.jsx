@@ -1,171 +1,279 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Modal from "../components/Modal/Modal";
-import PreferencesSelector from "../components/Header/PreferencesSelector";
+import { CATEGORY, COUNTRIES, formatTimeAgo } from "../utils/helpers";
 import NewsCard from "../components/UI/NewsCard";
-import Loader from "../components/Loader/Loader";
 
 const ForYouPage = () => {
+  const [sources, setSources] = useState([]);
+  const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchResult, setSearchResult] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [filteredResult, setFilteredResult] = useState([]);
-  const [hasPreferences, setHasPreferences] = useState(false);
-  const [preferences, setPreferences] = useState({
-    sources: [],
-    categories: [],
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedSource, setSelectedSource] = useState(null);
+  const [fetchedData, setFetchedData] = useState({
+    category: { articles: [], page: 1 },
+    country: { articles: [], page: 1 },
+    source: { articles: [], page: 1 },
   });
 
-  const options = {
-    categories: ["business", "entertainment", "general", "health", "science", "sports", "technology"],
-  };
+  const [totalCategoryCount, setTotalCategoryCount] = useState(0);
+  const [totalCountryCount, setTotalCountryCount] = useState(0);
+  const [totalSourceCount, setTotalSourceCount] = useState(0);
 
-  // Fetch saved preferences from local storage
-  useEffect(() => {
-    const savedPreferences = localStorage.getItem("preferences");
-    if (savedPreferences) {
-      const parsedPreferences = JSON.parse(savedPreferences);
-      setPreferences(parsedPreferences);
-      
-      // Check if preferences have any selections
-      if (parsedPreferences.categories.length > 0 || parsedPreferences.sources.length > 0) {
-        setHasPreferences(true);
-      }
-    }
-  }, []);
-
-  const fetchNewsArticles = useCallback(async () => {
-    const category = preferences.categories[0] || "general";
+  const fetchSources = useCallback(async () => {
     try {
-      const url = `https://newsapi.org/v2/top-headlines?category=${category}&searchIn=title,description,content&language=en&apiKey=${
-        import.meta.env.VITE_API_KEY
-      }`;
+      const response = await fetch(
+        `https://newsapi.org/v2/sources?language=en&apiKey=${
+          import.meta.env.VITE_API_KEY
+        }`
+      );
 
-      const response = await fetch(url);
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error("Failed to fetch news source");
       }
 
       const data = await response.json();
-      return data.articles.filter((item) => item.title !== "[Removed]") || [];
-    } catch (error) {
-      console.error("Error fetching the news:", error);
-      return [];
+      const filteredSources = data.sources.filter(
+        (source) => source.url !== "https://news.google.com"
+      );
+
+      setSources(filteredSources);
+    } catch (err) {
+      console.error("Error fetching news sources:", err);
+      setError("Failed to load news sources");
     }
-  }, [preferences]);
+  }, []);
 
-  useEffect(() => {
-    // Only fetch articles if preferences have been set
-    if (hasPreferences) {
-      const fetchArticles = async () => {
-        setIsLoading(true);
-        try {
-          const articles = await fetchNewsArticles();
-          console.log("Articles fetched:", articles);
-          setSearchResult(articles);
+  const fetchData = async ({ type, value, page = 1 }) => {
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.append("page", page);
+      queryParams.append("pageSize", 10);
 
-          // Filter articles after fetching
-          const filtered = articles.filter((article) => {
-            const matchSource = preferences.sources.length
-              ? preferences.sources.includes(article.source.name)
-              : true;
-            return matchSource;
-          });
+      if (type === "category") queryParams.append("category", value);
+      if (type === "country") queryParams.append("country", value);
+      if (type === "source") queryParams.append("sources", value);
 
-          console.log("Filtered Articles:", filtered);
-          setFilteredResult(filtered);
-        } catch (error) {
-          console.error("Error loading articles:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
+      const response = await fetch(
+        `https://newsapi.org/v2/top-headlines?language=en&${queryParams.toString()}&apiKey=${
+          import.meta.env.VITE_API_KEY
+        }`
+      );
 
-      fetchArticles();
+      if (!response.ok)
+        throw new Error(`Failed to fetch data for ${type}: ${value}`);
+
+      const data = await response.json();
+
+      setFetchedData((prevData) => ({
+        ...prevData,
+        [type]: {
+          articles: [...prevData[type].articles, ...data.articles],
+          page,
+        },
+      }));
+
+      // Update total counts from API response
+      if (type === "category") setTotalCategoryCount(data.totalResults);
+      if (type === "country") setTotalCountryCount(data.totalResults);
+      if (type === "source") setTotalSourceCount(data.totalResults);
+    } catch (err) {
+      console.error(`Error fetching data for ${type}:`, err);
     }
-  }, [fetchNewsArticles, preferences, hasPreferences]);
+  };
 
-  // Handle preferences selection
-  const handlePreferencesSelect = (newPreferences) => {
-    setPreferences(newPreferences);
-    localStorage.setItem("preferences", JSON.stringify(newPreferences));
-    
-    // Set has preferences to true and close modal
-    setHasPreferences(true);
+
+  const handleSave = () => {
+    const preferences = {
+      category: selectedCategory,
+      country: selectedCountry,
+      source: selectedSource,
+    };
+  
+    localStorage.setItem("newsFilters", JSON.stringify(preferences));
+  
+    // Reset fetched data before fetching new data
+    setFetchedData({
+      category: { articles: [], page: 1 },
+      country: { articles: [], page: 1 },
+      source: { articles: [], page: 1 },
+    });
+  
+    // Reset total counts
+    setTotalCategoryCount(0);
+    setTotalCountryCount(0);
+    setTotalSourceCount(0);
+  
+    // Fetch data based on selected preferences
+    if (selectedCategory)
+      fetchData({ type: "category", value: selectedCategory });
+    if (selectedCountry) fetchData({ type: "country", value: selectedCountry });
+    if (selectedSource) fetchData({ type: "source", value: selectedSource });
+  
     setIsModalOpen(false);
   };
 
-  const articlesToShow = filteredResult.length > 0 ? filteredResult : searchResult;
+  const handleLoadMore = (type) => {
+    const nextPage = fetchedData[type].page + 1;
+    const value =
+      type === "category"
+        ? selectedCategory
+        : type === "country"
+        ? selectedCountry
+        : selectedSource;
+
+    fetchData({ type, value, page: nextPage });
+  };
+
+  useEffect(() => {
+    fetchSources();
+
+    const storedPreferences = JSON.parse(localStorage.getItem("newsFilters"));
+    if (storedPreferences) {
+      setSelectedCategory(storedPreferences.category);
+      setSelectedCountry(storedPreferences.country);
+      setSelectedSource(storedPreferences.source);
+
+      if (storedPreferences.category) {
+        fetchData({ type: "category", value: storedPreferences.category });
+      }
+      if (storedPreferences.country) {
+        fetchData({ type: "country", value: storedPreferences.country });
+      }
+      if (storedPreferences.source) {
+        fetchData({ type: "source", value: storedPreferences.source });
+      }
+    } else {
+      setIsModalOpen(true);
+    }
+  }, [fetchSources]);
 
   return (
-    <>
-      <div className="flex align-center justify-between py-4">
-        <div className="heading">
-          <h4 className="text-2xl font-medium dark:text-white">For You</h4>
-          <p>Recommended based on your preferences</p>
-        </div>
-        <div className="flex items-center">
-          <button
-            onClick={() => setIsModalOpen(true)}
-            type="button"
-            className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
-          >
-            Customize
-          </button>
-        </div>
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          title="Customize Your News Feed"
-          customClassName="items-center"
-        >
-          <PreferencesSelector 
-            options={options} 
-            setPreferences={handlePreferencesSelect} 
-          />
-        </Modal>
+    <div className="py-16">
+      <div className="flex justify-between align-middle">
+      <h1>For You</h1>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+      >
+        Open Preferences
+      </button>
       </div>
-      <div className="content h-full">
-        {!hasPreferences ? (
-          <div className="flex items-center justify-center py-4">
-            <div className="text-center">
-              <p className="text-xl mb-4">Welcome to Your Personalized News Feed!</p>
-              <p className="mb-4">Please customize your preferences to start seeing news articles.</p>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Customize Your Preference"
+        maxWidth="max-w-4xl"
+      >
+        <div>
+          <h3>Select Category</h3>
+          <div className="flex flex-wrap gap-2">
+            {CATEGORY.map((category) => (
               <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                  selectedCategory === category
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                }`}
               >
-                Set Preferences
+                {category}
               </button>
-            </div>
-          </div>
-        ) : isLoading ? (
-          <div className="flex items-center justify-center py-4">
-            <Loader />
-          </div>
-        ) : articlesToShow.length > 0 ? (
-          <div className="grid md:grid-cols-2 gap-x-4">
-            {articlesToShow.map((article, index) => (
-              <div key={index} className="py-2">
-                <NewsCard
-                  title={article.title}
-                  description={article.description}
-                  url={article.url}
-                  image={
-                    article.urlToImage
-                      ? article.urlToImage
-                      : "https://via.placeholder.com/150"
-                  }
-                />
-              </div>
             ))}
           </div>
-        ) : (
-          <div className="flex items-center py-4">
-            <p>No articles match your preferences. Please adjust them.</p>
+
+          <h3>Select Country</h3>
+          <div className="flex flex-wrap gap-2">
+            {COUNTRIES.map((country) => (
+              <button
+                key={country.code}
+                onClick={() => setSelectedCountry(country.code)}
+                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                  selectedCountry === country.code
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                }`}
+              >
+                {country.name}
+              </button>
+            ))}
           </div>
-        )}
+
+          <h3>Select Source</h3>
+          <div className="flex flex-wrap gap-2">
+            {sources.map((source) => (
+              <button
+                key={source.id}
+                onClick={() => setSelectedSource(source.id)}
+                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                  selectedSource === source.id
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                }`}
+              >
+                {source.name}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg"
+            onClick={handleSave}
+          >
+            Save Preferences
+          </button>
+        </div>
+      </Modal>
+
+      <div className="grid lg:grid-cols-3 gap-6">
+        {["category", "country", "source"].map((type) => {
+          const articles = fetchedData[type]?.articles || [];
+          const totalCount = {
+            category: totalCategoryCount,
+            country: totalCountryCount,
+            source: totalSourceCount,
+          }[type];
+
+          return (
+            articles.length > 0 && (
+              <div key={type} className=" bg-white rounded-xl mt-5">
+                <h3 className="">
+                  {type.charAt(0).toUpperCase() + type.slice(1)} Data
+                </h3>
+                <div className="max-h-[75vh] overflow-auto min-h-[600px]">
+                  <div className="py-3">
+                    {articles.map((article, index) => (
+                      <NewsCard
+                        key={index}
+                        title={article.title}
+                        description={article.description}
+                        timeAgo={formatTimeAgo(article.publishedAt)}
+                        url={article.url}
+                        image={
+                          article.urlToImage ||
+                          "https://via.placeholder.com/150"
+                        }
+                      />
+                    ))}
+                  </div>
+
+                  {articles.length < totalCount && (
+                    <button
+                      onClick={() => handleLoadMore(type)}
+                      className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
+                    >
+                      Load More
+                    </button>
+                  )}
+                </div>
+              </div>
+            )
+          );
+        })}
       </div>
-    </>
+    </div>
   );
 };
 

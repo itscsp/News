@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import NewsCard from '../UI/NewsCard';
-import { formatTimeAgo } from '../../utils/helpers';
+import { COUNTRIES, formatTimeAgo } from '../../utils/helpers';
 import Loader from '../Loader/Loader';
 import { IoNewspaper } from 'react-icons/io5';
 
@@ -13,14 +13,7 @@ const NewsSourceFilter = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Available countries
-  const COUNTRIES = [
-    { code: 'us', name: 'United States' },
-    { code: 'gb', name: 'United Kingdom' },
-    { code: 'ca', name: 'Canada' },
-    { code: 'au', name: 'Australia' },
-    { code: 'in', name: 'India' },
-  ];
+
 
   // Fetch available news sources
   const fetchNewsSources = useCallback(async () => {
