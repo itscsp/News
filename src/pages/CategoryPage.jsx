@@ -53,7 +53,7 @@ const CategoryPage = () => {
       </ul>
 
       {/* Articles Section */}
-      <div className="p-6 pt-0 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full">
+      <div className="md:p-6 pt-0 bg-gray-50 text-medium text-gray-500 dark:text-gray-400 dark:bg-gray-800 rounded-lg w-full">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
           {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} News
         </h3>
