@@ -1,10 +1,13 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
+import React, { Suspense } from "react";
 import RootLayout from "./pages/RootLayout";
-import HomePage from "./pages/HomePage";
-import SourcePage from "./pages/SourcePage";
-import ForYouPage from "./pages/ForYouPage";
-import CategoryPage from "./pages/CategoryPage";
+import { AppProvider } from "./context/AppContext";
 
+// Lazy-loaded components
+const HomePage = React.lazy(() => import("./pages/HomePage"));
+const ForYouPage = React.lazy(() => import("./pages/ForYouPage"));
+const CategoryPage = React.lazy(() => import("./pages/CategoryPage"));
+const NotFoundPage = React.lazy(() => import("./pages/NotFoundPage"));
 
 const router = createBrowserRouter([
   {
@@ -13,27 +16,46 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <HomePage />
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <HomePage />
+          </Suspense>
+        ),
       },
       {
         path: '/for-you',
-        element: <ForYouPage />
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <ForYouPage />
+          </Suspense>
+        ),
       },
       {
-        path:'/category',
-        element: <CategoryPage />
+        path: '/category',
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <CategoryPage />
+          </Suspense>
+        ),
       },
-      // {
-      //   path: '/source',
-      //   element: <SourcePage />
-      // }
-    ]
-  }
-])
-
-
+      {
+        path: '*',
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <NotFoundPage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <AppProvider>
+      <RouterProvider router={router} />;
+    </AppProvider>
+  )
 }
+
 export default App;

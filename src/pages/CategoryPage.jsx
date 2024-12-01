@@ -1,35 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { FaBusinessTime, FaHeartbeat, FaRegNewspaper, FaFlask, FaRunning, FaTv, FaGlobe } from "react-icons/fa";
-import NewsCard from "../components/UI/NewsCard"; // Import NewsCard component
-import { formatTimeAgo } from "../utils/helpers";
-
-const categories = [
-  { id: "general", name: "General", icon: <FaRegNewspaper /> },
-  { id: "business", name: "Business", icon: <FaBusinessTime /> },
-  { id: "entertainment", name: "Entertainment", icon: <FaTv /> },
-  { id: "health", name: "Health", icon: <FaHeartbeat /> },
-  { id: "science", name: "Science", icon: <FaFlask /> },
-  { id: "sports", name: "Sports", icon: <FaRunning /> },
-  { id: "technology", name: "Technology", icon: <FaGlobe /> },
-];
+import React, { useEffect } from "react";
+import { useAppContext } from "../context/AppContext";
+import NewsCard from "../components/UI/NewsCard";
 
 const CategoryPage = () => {
-  const [activeCategory, setActiveCategory] = useState("general");
-  const [articles, setArticles] = useState([]);
+  const { categories, activeCategory, setActiveCategory, fetchArticles, articles } = useAppContext();
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const url = `https://newsapi.org/v2/top-headlines?country=us&category=${activeCategory}&apiKey=${import.meta.env.VITE_API_KEY}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        setArticles(data.articles.filter(item => item.title !== "[Removed]") || []);
-      } catch (error) {
-        console.error("Error fetching articles:", error);
-      }
-    };
-    fetchArticles();
+    fetchArticles(activeCategory);
   }, [activeCategory]);
+
+  const categoryArticles = articles[activeCategory] || [];
 
   return (
     <div className="md:flex pt-10">
@@ -45,7 +25,6 @@ const CategoryPage = () => {
                   : "bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white"
               }`}
             >
-              <span className="w-4 h-4 me-2">{category.icon}</span>
               {category.name}
             </button>
           </li>
@@ -57,19 +36,19 @@ const CategoryPage = () => {
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
           {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} News
         </h3>
-        {articles.length > 0 ? (
+        {categoryArticles.length > 0 ? (
           <div className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
-            {articles.map((article, index) => (
-               <NewsCard
-               title={article.title}
-               description={article.description}
-           timeAgo={formatTimeAgo(article.publishedAt)}
-
-               url={article.url}
-               image={
-                article.urlToImage ? article.urlToImage : "https://via.placeholder.com/150" // Placeholder image if no image is provided
-               }
-             />
+            {categoryArticles.map((article, index) => (
+              <NewsCard
+                key={index}
+                title={article.title}
+                description={article.description}
+                timeAgo={article.publishedAt}
+                url={article.url}
+                image={
+                  article.urlToImage || "https://via.placeholder.com/150"
+                }
+              />
             ))}
           </div>
         ) : (
