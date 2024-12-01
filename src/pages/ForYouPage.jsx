@@ -4,6 +4,7 @@ import NewsCard from "../components/UI/NewsCard";
 import PreferenceButton from "../components/UI/PreferenceButton";
 import { useNewsData } from "../hooks/useNewsData";
 import { CATEGORY, COUNTRIES, formatTimeAgo } from "../utils/helpers.js";
+import { IoIosArrowForward } from "react-icons/io";
 
 const ForYouPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,7 +64,7 @@ const ForYouPage = () => {
   return (
     <div className="py-6">
       <div className="flex justify-between align-middle">
-        <h1>For You</h1>
+        <h1 className="text-2xl font-medium">For You</h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg"
@@ -156,8 +157,9 @@ const ForYouPage = () => {
           return (
             articles.length > 0 && (
               <div key={type} className="bg-white rounded-xl mt-5">
-                <h3>
-                  {type.charAt(0).toUpperCase() + type.slice(1)} Data
+                <h3 className="px-4 py-2 text-xl capitalize flex items-center gap-3 justify-start">
+                  {selectedPreferences[type]}
+                  <IoIosArrowForward />
                 </h3>
                 <div className="max-h-[75vh] overflow-auto min-h-[600px]">
                   <div className="py-3">

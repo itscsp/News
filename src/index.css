@@ -2,10 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Example for custom font import */
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('/path-to-font/my-custom-font.woff2') format('woff2'),
+       url('/path-to-font/my-custom-font.woff') format('woff');
+}
+
+
 body {
   background-color: #f6f8fc;
   scrollbar-width: thin;
 }
+
 
 ::-webkit-scrollbar {
   width: 1px;  /* Extremely narrow vertical scrollbar */
