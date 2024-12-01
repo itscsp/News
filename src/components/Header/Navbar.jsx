@@ -31,12 +31,12 @@ const Navbar = () => {
                 Topic
               </Link>
             </li>
-            <span className="text-gray-300 hidden sm:inline">|</span>
-            <li className="flex items-center space-x-2">
+            {/* <span className="text-gray-300 hidden sm:inline">|</span> */}
+            {/* <li className="flex items-center space-x-2">
               <Link to="/source" className={getLinkClasses('/source')}>
                 Source
               </Link>
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>

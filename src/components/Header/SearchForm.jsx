@@ -2,6 +2,8 @@ import React, { useState, useRef, useCallback } from "react";
 import Modal from "../Modal/Modal";
 import Loader from "../Loader/Loader";
 import { IoSearchSharp } from "react-icons/io5";
+import NewsCard from "../UI/NewsCard";
+import { formatTimeAgo } from "../../utils/helpers";
 
 const SearchForm = ({ divClass = "", btnClass = "" }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,7 +27,7 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
       }
 
       const data = await response.json();
-      return data.articles.filter(item => item.title !== "[Removed]") || [];
+      return data.articles.filter((item) => item.title !== "[Removed]") || [];
     } catch (error) {
       console.error("Error fetching the news:", error);
       return [];
@@ -64,7 +66,6 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
     }
   };
 
-
   return (
     <>
       <form
@@ -76,7 +77,7 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
         </label>
         <div className={`relative ${divClass}`}>
           <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            <IoSearchSharp  className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            <IoSearchSharp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           </div>
           <input
             ref={inputRef}
@@ -110,16 +111,16 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
         ) : searchResult.length > 0 ? (
           searchResult.map((item, index) => (
             <div key={index} className="my-4">
-              <h3 className="text-lg font-semibold">{item.title}</h3>
-              <p className="text-sm text-gray-600">{item.description}</p>
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                Read More
-              </a>
+              <NewsCard
+                title={item.title}
+                description={item.description}
+            timeAgo={formatTimeAgo(item.publishedAt)}
+
+                url={item.url}
+                image={
+                  item.urlToImage ? item.urlToImage : "https://via.placeholder.com/150" // Placeholder image if no image is provided
+                }
+              />
             </div>
           ))
         ) : (
