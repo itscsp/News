@@ -10,17 +10,52 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+  const [selectedDateRange, setSelectedDateRange] = useState('last7Days');
   const inputRef = useRef(null);
 
-  const fetchNewsArticles = useCallback(async (query) => {
+  // Predefined date range options
+  const dateRanges = [
+    { 
+      key: 'last7Days', 
+      label: 'Last 7 Days', 
+      getDates: () => {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - 7);
+        return { start, end };
+      }
+    },
+    { 
+      key: 'last15Days', 
+      label: 'Last 15 Days', 
+      getDates: () => {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - 15);
+        return { start, end };
+      }
+    },
+    { 
+      key: 'last30Days', 
+      label: 'Last 30 Days', 
+      getDates: () => {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - 30);
+        return { start, end };
+      }
+    }
+  ];
+
+  const fetchNewsArticles = useCallback(async (query, start, end) => {
     try {
       // Use encodeURIComponent to safely handle special characters in the query
       const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
         query
-      )}&searchIn=title,description,content&language=en&apiKey=${
+      )}&sortBy=publishedAt&order=desc&from=${start.toISOString()}&to=${end.toISOString()}&searchIn=title,description,content&language=en&apiKey=${
         import.meta.env.VITE_API_KEY
       }`;
-
+      
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -47,8 +82,12 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
     setSearchQuery(query);
     setIsLoading(true);
 
+    // Get the selected date range
+    const selectedRange = dateRanges.find(range => range.key === selectedDateRange);
+    const { start, end } = selectedRange.getDates();
+
     try {
-      const articles = await fetchNewsArticles(query);
+      const articles = await fetchNewsArticles(query, start, end);
       setSearchResult(articles);
     } finally {
       setIsLoading(false);
@@ -63,6 +102,22 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
     // Clear input field safely
     if (inputRef.current) {
       inputRef.current.value = "";
+    }
+  };
+
+  const handleDateRangeSelect = async (rangeKey) => {
+    setSelectedDateRange(rangeKey);
+    setIsLoading(true);
+
+    // Get the selected date range
+    const selectedRange = dateRanges.find(range => range.key === rangeKey);
+    const { start, end } = selectedRange.getDates();
+
+    try {
+      const articles = await fetchNewsArticles(searchQuery, start, end);
+      setSearchResult(articles);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -83,8 +138,8 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
             ref={inputRef}
             type="text"
             id="simple-search"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Search branch name..."
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Search news..."
             required
           />
         </div>
@@ -102,27 +157,47 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
         onClose={searchCloseHandler}
         title={`Search Query: "${searchQuery}"`}
         customClassName="items-start"
+        maxWidth="max-w-4xl"
       >
-        <h2 className="text-2xl font-medium">Result:</h2>
+        {/* Date Range Buttons */}
+        <div className="flex space-x-2 mb-4 w-full overflow-x-auto">
+          {dateRanges.map((range) => (
+            <button
+              key={range.key}
+              onClick={() => handleDateRangeSelect(range.key)}
+              className={`
+                px-3 py-1 text-sm rounded transition-colors whitespace-nowrap
+                ${selectedDateRange === range.key 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                }
+              `}
+            >
+              {range.label}
+            </button>
+          ))}
+        </div>
+
+        <h2 className="text-2xl font-medium mb-4">Result:</h2>
         {isLoading ? (
           <div className="flex justify-center items-center h-24">
             <Loader text="Searching..." />
           </div>
         ) : searchResult.length > 0 ? (
-          searchResult.map((item, index) => (
-            <div key={index} className="my-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {searchResult.map((item, index) => (
               <NewsCard
+                key={index}
                 title={item.title}
                 description={item.description}
-            timeAgo={formatTimeAgo(item.publishedAt)}
-
+                timeAgo={formatTimeAgo(item.publishedAt)}
                 url={item.url}
                 image={
-                  item.urlToImage ? item.urlToImage : "https://via.placeholder.com/150" // Placeholder image if no image is provided
+                  item.urlToImage ? item.urlToImage : "https://via.placeholder.com/150"
                 }
               />
-            </div>
-          ))
+            ))}
+          </div>
         ) : (
           <p>No results found for your query.</p>
         )}

@@ -97,7 +97,7 @@ const ForYouPage = () => {
   const articlesToShow = filteredResult.length > 0 ? filteredResult : searchResult;
 
   return (
-    <div className="container">
+    <>
       <div className="flex align-center justify-between py-4">
         <div className="heading">
           <h4 className="text-2xl font-medium dark:text-white">For You</h4>
@@ -107,7 +107,7 @@ const ForYouPage = () => {
           <button
             onClick={() => setIsModalOpen(true)}
             type="button"
-            className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+            className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
           >
             Customize
           </button>
@@ -165,7 +165,7 @@ const ForYouPage = () => {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 
