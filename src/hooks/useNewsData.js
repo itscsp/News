@@ -19,6 +19,7 @@ export const useNewsData = (apiKey) => {
   const loadSources = useCallback(async () => {
     try {
       const fetchedSources = await fetchNewsSources(apiKey);
+
       setSources(fetchedSources);
     } catch (err) {
       setError("Failed to load news sources");
@@ -27,19 +28,25 @@ export const useNewsData = (apiKey) => {
 
   const fetchNews = async ({ type, value, page = 1 }) => {
     try {
-      const data = await fetchNewsData({ 
-        type, 
-        value, 
-        page, 
-        apiKey 
+      const data = await fetchNewsData({
+        type,
+        value,
+        page,
+        apiKey,
       });
+
+      // Filter out removed articles
+      const validArticles = data.articles.filter(
+        (article) => article.title !== "[Removed]"
+      );
 
       setFetchedData((prevData) => ({
         ...prevData,
         [type]: {
-          articles: page === 1 
-            ? data.articles 
-            : [...prevData[type].articles, ...data.articles],
+          articles:
+            page === 1
+              ? validArticles
+              : [...prevData[type].articles, ...validArticles],
           page,
         },
       }));

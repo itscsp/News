@@ -131,6 +131,7 @@ const NewsSourceFilter = () => {
             {source.name}
           </button>
         ))}
+        {sources.length < 1 && <Loader text='Loading Source..' />}
       </div>
 
       {/* Articles Display */}
