@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 import NewsCard from "../components/UI/NewsCard";
+import Loader from "../components/Loader/Loader";
 
 const CategoryPage = () => {
   const { categories, activeCategory, setActiveCategory, fetchArticles, articles } = useAppContext();
@@ -52,7 +53,7 @@ const CategoryPage = () => {
             ))}
           </div>
         ) : (
-          <p>No articles available for this category.</p>
+          <Loader text={`Loading ${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Articles...`} />
         )}
       </div>
     </div>
