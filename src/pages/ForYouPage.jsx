@@ -80,68 +80,73 @@ const ForYouPage = () => {
         title="Customize Your Preference"
         maxWidth="max-w-4xl"
       >
-        <div>
-          <div className="flex justify-between items-center">
-            <h2>Select option</h2>
-            <button
-              className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg"
-              onClick={handleSave}
-            >
-              Save Preferences
-            </button>
-          </div>
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <h3>Select Category</h3>
-              <div className="flex flex-wrap gap-2">
-                {CATEGORY.map((category) => (
-                  <PreferenceButton
-                    key={category}
-                    item={category}
-                    selected={selectedPreferences.category}
-                    onSelect={(category) =>
-                      setSelectedPreferences((prev) => ({ ...prev, category }))
-                    }
-                  />
-                ))}
-              </div>
-            </div>
+ <div>
+  <div className="flex justify-between items-center">
+    <h2 className="font-medium text-gray-600 dark:text-gray-300">Select Option</h2>
+    <button
+      className=" px-4 py-2 bg-green-500 text-white rounded-lg"
+      onClick={handleSave}
+    >
+      Save Preferences
+    </button>
+  </div>
 
-            <div>
-              <h3>Select Country</h3>
-              <div className="flex flex-wrap gap-2">
-                {COUNTRIES.map((country) => (
-                  <PreferenceButton
-                    key={country.code}
-                    item={country}
-                    selected={selectedPreferences.country}
-                    onSelect={(country) =>
-                      setSelectedPreferences((prev) => ({ ...prev, country }))
-                    }
-                    getKey={(country) => country.code}
-                    getLabel={(country) => country.name}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+  {/* Grid with dividers */}
+  <div className="grid grid-cols-2 gap-5">
+    <div className="py-4">
+      <h3 className="mb-2 font-medium text-gray-600 dark:text-gray-300">Category</h3>
+      <div className="flex flex-wrap gap-2">
+        {CATEGORY.map((category) => (
+          <PreferenceButton
+            key={category.id}
+            item={category.id}
+            selected={selectedPreferences.category}
+            onSelect={(category) =>
+              setSelectedPreferences((prev) => ({ ...prev, category }))
+            }
+          />
+        ))}
+      </div>
+    </div>
 
-          <h3>Select Source</h3>
-          <div className="flex flex-wrap gap-2">
-            {sources.map((source) => (
-              <PreferenceButton
-                key={source.id}
-                item={source}
-                selected={selectedPreferences.source}
-                onSelect={(source) =>
-                  setSelectedPreferences((prev) => ({ ...prev, source }))
-                }
-                getKey={(source) => source.id}
-                getLabel={(source) => source.name}
-              />
-            ))}
-          </div>
-        </div>
+    <div className="py-4">
+      <h3 className="mb-2 font-medium text-gray-600 dark:text-gray-300">Country</h3>
+      <div className="flex flex-wrap gap-2">
+        {COUNTRIES.map((country) => (
+          <PreferenceButton
+            key={country.code}
+            item={country}
+            selected={selectedPreferences.country}
+            onSelect={(country) =>
+              setSelectedPreferences((prev) => ({ ...prev, country }))
+            }
+            getKey={(country) => country.code}
+            getLabel={(country) => country.name}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div className="border-t pt-4">
+    <h3 className="mb-2 font-medium text-gray-600 dark:text-gray-300">Source</h3>
+    <div className="flex flex-wrap gap-2">
+      {sources.map((source) => (
+        <PreferenceButton
+          key={source.id}
+          item={source}
+          selected={selectedPreferences.source}
+          onSelect={(source) =>
+            setSelectedPreferences((prev) => ({ ...prev, source }))
+          }
+          getKey={(source) => source.id}
+          getLabel={(source) => source.name}
+        />
+      ))}
+    </div>
+  </div>
+</div>
+
       </Modal>
       {Object.values(selectedPreferences).every((value) => !value) ? (
         <div className="text-center text-gray-500 mt-10">

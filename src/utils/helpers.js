@@ -38,14 +38,14 @@ export const COUNTRIES = [
 ];
 
 export const CATEGORY = [
-  "business",
-  "entertainment",
-  "general",
-  "health",
-  "science",
-  "sports",
-  "technology",
-];
+  { id: "general", name: "General" },
+  { id: "business", name: "Business" },
+  { id: "entertainment", name: "Entertainment" },
+  { id: "health", name: "Health" },
+  { id: "science", name: "Science" },
+  { id: "sports", name: "Sports" },
+  { id: "technology", name: "Technology" },
+]
 
 export const DATAERANGES = [
   {
