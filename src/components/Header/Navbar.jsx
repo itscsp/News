@@ -5,8 +5,8 @@ const Navbar = () => {
   const location = useLocation();
 
   const getLinkClasses = (path) =>
-    `text-gray-500 dark:text-white border-b-2  hover:border-blue-500 ${
-      location.pathname === path ? 'border-b-2 border-blue-500' : ''
+    `text-gray-500 dark:text-white border-b-2   hover:border-blue-500 ${
+      location.pathname === path ? 'border-b-2 border-blue-500' : 'border-[#fff] '
     }`;
 
   return (
@@ -31,12 +31,7 @@ const Navbar = () => {
                 Topic
               </Link>
             </li>
-            {/* <span className="text-gray-300 hidden sm:inline">|</span> */}
-            {/* <li className="flex items-center space-x-2">
-              <Link to="/source" className={getLinkClasses('/source')}>
-                Source
-              </Link>
-            </li> */}
+           
           </ul>
         </div>
       </div>
