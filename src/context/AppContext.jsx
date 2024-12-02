@@ -3,12 +3,13 @@ import { fetchTopStories } from "../api/NYTimesAPI";
 import { fetchGuardianNews } from "../api/GuardianAPI";
 import axios from "axios";
 import { fetchArticlesByTopic } from "../api/TopicAPI";
+import { CATEGORY } from "../utils/helpers";
 
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
-  const [articles, setArticles] = useState({});
+  const [topicArticles, setTopicArticles] = useState({});
 
   const [nyTimesArticles, setNyTimesArticles] = useState({
     articles: [],
@@ -37,15 +38,7 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     // Existing categories setup
-    setCategories([
-      { id: "general", name: "General" },
-      { id: "business", name: "Business" },
-      { id: "entertainment", name: "Entertainment" },
-      { id: "health", name: "Health" },
-      { id: "science", name: "Science" },
-      { id: "sports", name: "Sports" },
-      { id: "technology", name: "Technology" },
-    ]);
+    setCategories(CATEGORY);
 
     // Initial fetch for NYT stories
     const fetchInitialNYTStories = async () => {
@@ -95,10 +88,10 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   const fetchTopicArticles = async (category) => {
-    if (articles[category]) return; // skip if data exists
+    if (topicArticles[category]) return; // skip if data exists
     try {
       const data = await fetchArticlesByTopic(category); // api/TopicAPI
-      setArticles((prev) => ({
+      setTopicArticles((prev) => ({
         ...prev,
         [category]: data.articles.filter((item) => item.title !== "[Removed]"),
       }));
@@ -174,7 +167,7 @@ export const AppProvider = ({ children }) => {
     <AppContext.Provider
       value={{
         categories,
-        articles,
+        topicArticles,
         fetchTopicArticles,
         nyTimesArticles,
         guardianArticles,

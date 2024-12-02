@@ -30,12 +30,22 @@ export const fetchNewsData = async ({
     queryParams.append("page", page);
     queryParams.append("pageSize", pageSize);
 
-    if (type === "category") queryParams.append("category", value);
-    if (type === "country") queryParams.append("country", value);
-    if (type === "source") queryParams.append("sources", value);
+    let url = "https://newsapi.org/v2/top-headlines?language=en"; // Default URL
+
+    if (type === "category") {
+      queryParams.append("category", value);
+    }
+    if (type === "country") {
+      // Use the "everything" endpoint for country-based queries
+      url = "https://newsapi.org/v2/everything?language=en";
+      queryParams.append("q", value);  // 'q' can be used to search articles by country
+    }
+    if (type === "source") {
+      queryParams.append("sources", value);
+    }
 
     const response = await fetch(
-      `https://newsapi.org/v2/top-headlines?language=en&${queryParams.toString()}&apiKey=${apiKey}`
+      `${url}&${queryParams.toString()}&apiKey=${apiKey}`
     );
 
     if (!response.ok)
@@ -47,3 +57,4 @@ export const fetchNewsData = async ({
     throw err;
   }
 };
+

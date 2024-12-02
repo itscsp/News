@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import React, { Suspense } from "react";
 import RootLayout from "./pages/RootLayout";
 import { AppProvider } from "./context/AppContext";
+import { NewsProvider } from "./context/NewsContext";
 
 // Lazy-loaded components
 const HomePage = React.lazy(() => import("./pages/HomePage"));
@@ -53,7 +54,10 @@ const router = createBrowserRouter([
 function App() {
   return (
     <AppProvider>
+      <NewsProvider>
+
       <RouterProvider router={router} />;
+      </NewsProvider>
     </AppProvider>
   )
 }

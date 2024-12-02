@@ -5,13 +5,15 @@ import Loader from "../components/Loader/Loader";
 import { formatTimeAgo } from "../utils/helpers";
 
 const CategoryPage = () => {
-  const { categories, activeCategory, setActiveCategory, fetchTopicArticles, articles } = useAppContext();
+  const { categories, activeCategory, setActiveCategory, fetchTopicArticles, topicArticles } = useAppContext();
+
+  console.log(categories)
 
   useEffect(() => {
     fetchTopicArticles(activeCategory);
   }, [activeCategory]);
 
-  const categoryArticles = articles[activeCategory] || [];
+  const categoryArticles = topicArticles[activeCategory] || [];
 
   return (
     <div className="md:flex pt-10">
