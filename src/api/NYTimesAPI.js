@@ -1,4 +1,3 @@
-// NYTimesAPI.js
 import axios from 'axios';
 
 const BASE_URL = 'https://api.nytimes.com/svc/topstories/v2/home.json';
@@ -11,11 +10,8 @@ export const fetchTopStories = async (page = 1, limit = 12) => {
       },
     });
 
-    // Calculate start and end indices for pagination
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-
-    // Slice results based on page and limit
     const paginatedResults = response.data.results.slice(startIndex, endIndex);
     
     return {

@@ -5,10 +5,10 @@ import Loader from "../components/Loader/Loader";
 import { formatTimeAgo } from "../utils/helpers";
 
 const CategoryPage = () => {
-  const { categories, activeCategory, setActiveCategory, fetchArticles, articles } = useAppContext();
+  const { categories, activeCategory, setActiveCategory, fetchTopicArticles, articles } = useAppContext();
 
   useEffect(() => {
-    fetchArticles(activeCategory);
+    fetchTopicArticles(activeCategory);
   }, [activeCategory]);
 
   const categoryArticles = articles[activeCategory] || [];

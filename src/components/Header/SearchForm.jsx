@@ -3,71 +3,19 @@ import Modal from "../Modal/Modal";
 import Loader from "../Loader/Loader";
 import { IoSearchSharp } from "react-icons/io5";
 import NewsCard from "../UI/NewsCard";
-import { formatTimeAgo } from "../../utils/helpers";
+import { DATAERANGES, formatTimeAgo } from "../../utils/helpers";
+import { searchArticles } from "../../api/SearchAPI";
+
 
 const SearchForm = ({ divClass = "", btnClass = "" }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-  const [selectedDateRange, setSelectedDateRange] = useState('last7Days');
+  const [selectedDateRange, setSelectedDateRange] = useState("last7Days");
   const inputRef = useRef(null);
 
-  // Predefined date range options
-  const dateRanges = [
-    { 
-      key: 'last7Days', 
-      label: 'Last 7 Days', 
-      getDates: () => {
-        const end = new Date();
-        const start = new Date();
-        start.setDate(end.getDate() - 7);
-        return { start, end };
-      }
-    },
-    { 
-      key: 'last15Days', 
-      label: 'Last 15 Days', 
-      getDates: () => {
-        const end = new Date();
-        const start = new Date();
-        start.setDate(end.getDate() - 15);
-        return { start, end };
-      }
-    },
-    { 
-      key: 'last30Days', 
-      label: 'Last 30 Days', 
-      getDates: () => {
-        const end = new Date();
-        const start = new Date();
-        start.setDate(end.getDate() - 30);
-        return { start, end };
-      }
-    }
-  ];
-
-  const fetchNewsArticles = useCallback(async (query, start, end) => {
-    try {
-      // Use encodeURIComponent to safely handle special characters in the query
-      const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
-        query
-      )}&sortBy=publishedAt&order=desc&from=${start.toISOString()}&to=${end.toISOString()}&searchIn=title,description,content&language=en&apiKey=${
-        import.meta.env.VITE_API_KEY
-      }`;
-      
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      return data.articles.filter((item) => item.title !== "[Removed]") || [];
-    } catch (error) {
-      console.error("Error fetching the news:", error);
-      return [];
-    }
-  }, []);
+  const dateRanges = DATAERANGES; // utils/helpers.js
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -83,11 +31,14 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
     setIsLoading(true);
 
     // Get the selected date range
-    const selectedRange = dateRanges.find(range => range.key === selectedDateRange);
+    const selectedRange = dateRanges.find(
+      (range) => range.key === selectedDateRange
+    );
     const { start, end } = selectedRange.getDates();
 
     try {
-      const articles = await fetchNewsArticles(query, start, end);
+
+      const articles = await searchArticles(query, start, end);
       setSearchResult(articles);
     } finally {
       setIsLoading(false);
@@ -108,13 +59,12 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
   const handleDateRangeSelect = async (rangeKey) => {
     setSelectedDateRange(rangeKey);
     setIsLoading(true);
-
-    // Get the selected date range
-    const selectedRange = dateRanges.find(range => range.key === rangeKey);
+    
+    const selectedRange = dateRanges.find((range) => range.key === rangeKey);
     const { start, end } = selectedRange.getDates();
 
     try {
-      const articles = await fetchNewsArticles(searchQuery, start, end);
+      const articles = await searchArticles(searchQuery, start, end);
       setSearchResult(articles);
     } finally {
       setIsLoading(false);
@@ -145,7 +95,7 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
         </div>
         <button
           type="submit"
-         class="text-blue-700 ml-2 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3.5  text-center  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+          className="text-blue-700 ml-2 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3.5 text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
         >
           <IoSearchSharp className="w-4 h-4" />
           <span className="sr-only">Search</span>
@@ -167,10 +117,9 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
               onClick={() => handleDateRangeSelect(range.key)}
               className={`
                 px-3 py-1 text-sm rounded transition-colors whitespace-nowrap
-                ${selectedDateRange === range.key 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                }
+                ${selectedDateRange === range.key
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-700"}
               `}
             >
               {range.label}
@@ -193,7 +142,9 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
                 timeAgo={formatTimeAgo(item.publishedAt)}
                 url={item.url}
                 image={
-                  item.urlToImage ? item.urlToImage : "https://via.placeholder.com/150"
+                  item.urlToImage
+                    ? item.urlToImage
+                    : "https://via.placeholder.com/150"
                 }
               />
             ))}

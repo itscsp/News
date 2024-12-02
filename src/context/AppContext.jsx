@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { fetchTopStories } from "../api/NYTimesAPI";
 import { fetchGuardianNews } from "../api/GuardianAPI";
+import axios from "axios";
+import { fetchArticlesByTopic } from "../api/TopicAPI";
 
 const AppContext = createContext();
 
@@ -92,14 +94,10 @@ export const AppProvider = ({ children }) => {
     fetchInitialGuardianStories();
   }, []);
 
-  const fetchArticles = async (category) => {
-    if (articles[category]) return; // Skip fetching if data exists
+  const fetchTopicArticles = async (category) => {
+    if (articles[category]) return; // skip if data exists
     try {
-      const url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${
-        import.meta.env.VITE_API_KEY
-      }`;
-      const response = await fetch(url);
-      const data = await response.json();
+      const data = await fetchArticlesByTopic(category); // api/TopicAPI
       setArticles((prev) => ({
         ...prev,
         [category]: data.articles.filter((item) => item.title !== "[Removed]"),
@@ -177,7 +175,7 @@ export const AppProvider = ({ children }) => {
       value={{
         categories,
         articles,
-        fetchArticles,
+        fetchTopicArticles,
         nyTimesArticles,
         guardianArticles,
         activeCategory,
