@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 import NewsCard from "../components/UI/NewsCard";
 import Loader from "../components/Loader/Loader";
+import { formatTimeAgo } from "../utils/helpers";
 
 const CategoryPage = () => {
   const { categories, activeCategory, setActiveCategory, fetchArticles, articles } = useAppContext();
@@ -44,7 +45,7 @@ const CategoryPage = () => {
                 key={index}
                 title={article.title}
                 description={article.description}
-                timeAgo={article.publishedAt}
+                timeAgo={formatTimeAgo(article.publishedAt)}
                 url={article.url}
                 image={
                   article.urlToImage || "https://via.placeholder.com/150"
