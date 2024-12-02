@@ -7,7 +7,6 @@ export const NewsProvider = ({ children }) => {
   const apiKey = import.meta.env.VITE_API_KEY;
 
   const [sources, setSources] = useState([]);
-
   const [fetchedData, setFetchedData] = useState({
     category: { articles: [], page: 1 },
     country: { articles: [], page: 1 },
@@ -25,7 +24,6 @@ export const NewsProvider = ({ children }) => {
     source: null,
   });
 
-  
   const loadSources = useCallback(async () => {
     try {
       const fetchedSources = await fetchNewsSources(apiKey);
@@ -33,7 +31,7 @@ export const NewsProvider = ({ children }) => {
     } catch (err) {
       setError("Failed to load news sources");
     }
-  }, []);
+  }, [apiKey]);
 
   // Fetch news based on preferences
   const fetchNews = async ({ type, value, page = 1 }) => {
@@ -82,16 +80,21 @@ export const NewsProvider = ({ children }) => {
   useEffect(() => {
     const storedPreferences = JSON.parse(localStorage.getItem("newsFilters"));
     if (storedPreferences) {
-
       setSelectedPreferences(storedPreferences);
       Object.entries(storedPreferences).forEach(([type, value]) => {
         if (value) fetchNews({ type, value });
       });
-      
     } else {
       loadSources();
     }
   }, [loadSources]);
+
+  // Ensure sources are fetched when the page is refreshed
+  useEffect(() => {
+    if (sources.length === 0) {
+      loadSources();
+    }
+  }, [sources, loadSources]);
 
   return (
     <NewsContext.Provider

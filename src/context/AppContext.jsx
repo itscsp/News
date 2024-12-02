@@ -8,6 +8,7 @@ import { CATEGORY } from "../utils/helpers";
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
+  
   const [categories, setCategories] = useState([]);
   const [topicArticles, setTopicArticles] = useState({});
 
