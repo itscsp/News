@@ -4,7 +4,6 @@ import NewsCard from "../components/UI/NewsCard";
 import PreferenceButton from "../components/UI/PreferenceButton";
 import { NewsContext } from "../context/NewsContext";
 import { CATEGORY, COUNTRIES, formatTimeAgo } from "../utils/helpers";
-import { IoIosArrowForward } from "react-icons/io";
 import Loader from "../components/Loader/Loader.jsx";
 
 const ForYouPage = () => {
@@ -19,11 +18,18 @@ const ForYouPage = () => {
   } = useContext(NewsContext);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(20);
 
   const handleSave = () => {
+    const storedPreferences = JSON.parse(localStorage.getItem("newsFilters")) || {};
+
+    const changedPreferences = Object.entries(selectedPreferences).filter(
+      ([type, value]) => storedPreferences[type] !== value
+    );
+
     localStorage.setItem("newsFilters", JSON.stringify(selectedPreferences));
 
-    Object.entries(selectedPreferences).forEach(([type, value]) => {
+    changedPreferences.forEach(([type, value]) => {
       if (value) {
         resetData(type);
         fetchNews({ type, value });
@@ -37,6 +43,10 @@ const ForYouPage = () => {
     const value = selectedPreferences[type];
     const nextPage = fetchedData[type].page + 1;
     fetchNews({ type, value, page: nextPage });
+  };
+
+  const handleShowMore = () => {
+    setVisibleCount((prevCount) => (prevCount === 20 ? sources.length : 20));
   };
 
   return (
@@ -71,13 +81,13 @@ const ForYouPage = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid md:grid-cols-2 gap-2 md:gap-5">
             {/* Category Preferences */}
-            <div className="py-4">
+            <div className="py-2 md:py-4">
               <h3 className="mb-2 font-medium text-gray-600 dark:text-gray-300">
                 Category
               </h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1 md:gap-2">
                 {CATEGORY.map((category) => (
                   <PreferenceButton
                     key={category.id}
@@ -92,11 +102,11 @@ const ForYouPage = () => {
             </div>
 
             {/* Country Preferences */}
-            <div className="py-4">
+            <div className="pt-2 pb-4 md:py-4">
               <h3 className="mb-2 font-medium text-gray-600 dark:text-gray-300">
                 Country
               </h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1 md:gap-2">
                 {COUNTRIES.map((country) => (
                   <PreferenceButton
                     key={country.code}
@@ -113,13 +123,12 @@ const ForYouPage = () => {
             </div>
           </div>
 
-          
           <div className="border-t pt-4">
             <h3 className="mb-2 font-medium text-gray-600 dark:text-gray-300">
               Source
             </h3>
-            <div className="flex flex-wrap gap-2">
-              {sources.map((source) => (
+            <div className="flex flex-wrap gap-1 md:gap-2">
+              {sources.slice(0, visibleCount).map((source) => (
                 <PreferenceButton
                   key={source.id}
                   item={source}
@@ -131,6 +140,15 @@ const ForYouPage = () => {
                   getLabel={(source) => source.name}
                 />
               ))}
+              {sources.length === 0 && <Loader text="Loading Source..." />}
+              {sources.length > 10 && (
+                <button
+                  onClick={handleShowMore}
+                  className="px-2 py-1 text-sm  font-semibold hover:text-white  rounded-lg hover:bg-blue-700 "
+                >
+                  {visibleCount === 20 ? "Show More" : "Show Less"}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -187,7 +205,7 @@ const ForYouPage = () => {
                 </div>
               </div>
             ) : (
-             ''
+              <div key={type} className="bg-white rounded-xl mt-5"></div>
             );
           })}
         </div>
