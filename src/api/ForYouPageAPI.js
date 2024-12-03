@@ -33,15 +33,15 @@ export const fetchNewsData = async ({
     queryParams.append("page", page);
     queryParams.append("pageSize", pageSize);
 
-    let url = `${NewsAPIRoot}/top-headlines?language=en`; // Default URL
+    let url = `${NewsAPIRoot}/top-headlines?language=en&sortBy=publishedAt`; 
 
     if (type === "category") {
       queryParams.append("category", value);
     }
     if (type === "country") {
-      // Use the "everything" endpoint for country-based queries
-      url = `${NewsAPIRoot}/everything?language=en`;
-      queryParams.append("q", value);  // 'q' can be used to search articles by country
+    
+      url = `${NewsAPIRoot}/everything?language=en&sortBy=publishedAt`;
+      queryParams.append("q", value); 
     }
     if (type === "source") {
       queryParams.append("sources", value);

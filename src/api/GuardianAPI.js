@@ -1,4 +1,4 @@
-// GuardianAPI.js
+
 import axios from 'axios';
 
 const BASE_URL = 'https://content.guardianapis.com';
