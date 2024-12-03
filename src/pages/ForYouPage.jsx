@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { NewsContext } from "../context/NewsContext";
 import EmptyState from "../components/Preference/EmptyState";
-import NewsSection from "../components/Preference/NewsSection";
+import PreferenceNewsSection from "../components/Preference/PreferenceNewsSection";
 import PreferencesModal from "../components/Preference/PreferencesModalWrapper";
 import { formatTimeAgo } from "../utils/helpers";
 
@@ -78,7 +78,7 @@ const ForYouPage = () => {
             const articles = fetchedData[type]?.articles || [];
             const totalCount = totalCounts[type];
             return articles.length > 0 ? (
-              <NewsSection
+              <PreferenceNewsSection
                 key={type}
                 boxName={type}
                 type={selectedPreferences[type].replaceAll("-", " ").toUpperCase()}

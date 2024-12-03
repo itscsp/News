@@ -1,13 +1,20 @@
 import React from "react";
 import NewsCard from "../UI/NewsCard";
 
-
-const NewsSection = ({ boxName, type, articles, totalCount, loadMore }) => {
+const PreferenceNewsSection = ({
+  boxName,
+  type,
+  articles,
+  totalCount,
+  loadMore,
+}) => {
   return (
     <div className="bg-white rounded-xl mt-5">
-      <span className="mx-4 px-2 py-0 pb-1 mt-2 text-sx rounded text-white inline-block bg-blue-500 ">{boxName}</span>
-      <h3 className="px-4 pb-2 text-base flex items-center gap-3 justify-start uppercase">
-        {type}
+      <h3 className="px-4 pb-2 mt-3 text-base flex items-center gap-3 justify-start uppercase">
+        <span className="px-2 py-0 pb-1  text-sx rounded text-white inline-block bg-blue-500 capitalize ">
+          {boxName}:
+        </span>
+        <span className="pb-1">{type}</span>
       </h3>
       <div className="max-h-[75vh] overflow-auto min-h-[600px] bg-white">
         <div className="py-3 flex flex-col gap-1">
@@ -36,4 +43,4 @@ const NewsSection = ({ boxName, type, articles, totalCount, loadMore }) => {
   );
 };
 
-export default NewsSection;
+export default PreferenceNewsSection;
