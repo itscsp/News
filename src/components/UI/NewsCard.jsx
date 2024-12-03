@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
+import { formatTimeAgo } from "../../utils/helpers";
 
 const NewsCard = ({ source, title, timeAgo, image, url }) => {
   return (
@@ -15,7 +16,7 @@ const NewsCard = ({ source, title, timeAgo, image, url }) => {
           <h2 className="text-base font-semibold text-gray-800">{title}</h2>
         </div>
         <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-400">{timeAgo}</p>
+        <p className="text-sm text-gray-400">{formatTimeAgo(timeAgo)}</p>
        
         <Link
                   to={url}

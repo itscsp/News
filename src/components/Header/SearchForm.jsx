@@ -3,7 +3,7 @@ import Modal from "../Modal/Modal";
 import Loader from "../Loader/Loader";
 import { IoSearchSharp } from "react-icons/io5";
 import NewsCard from "../UI/NewsCard";
-import { DATAERANGES, formatTimeAgo } from "../../utils/helpers";
+import { DATAERANGES } from "../../utils/helpers";
 import { searchArticles } from "../../api/SearchAPI";
 
 
@@ -140,7 +140,7 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
               source={item.source['name']}
                 title={item.title}
                 description={item.description}
-                timeAgo={formatTimeAgo(item.publishedAt)}
+                timeAgo={item.publishedAt}
                 url={item.url}
                 image={
                   item.urlToImage

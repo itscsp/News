@@ -47,7 +47,7 @@ const CategoryPage = () => {
                 key={index}
                 title={article.title}
                 description={article.description}
-                timeAgo={formatTimeAgo(article.publishedAt)}
+                timeAgo={article.publishedAt}
                 url={article.url}
                 image={
                   article.urlToImage || "https://via.placeholder.com/150"

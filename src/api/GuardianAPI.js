@@ -2,6 +2,7 @@
 import axios from 'axios';
 
 const BASE_URL = 'https://content.guardianapis.com';
+
 const API_KEY = import.meta.env.VITE_GUARDIAN_API_KEY;
 
 export const fetchGuardianNews = async (endpoint, page = 1, pageSize = 10) => {

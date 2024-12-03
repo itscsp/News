@@ -2,7 +2,7 @@ import React from "react";
 import NewsCard from "../UI/NewsCard";
 
 
-const NewsSection = ({ boxName, type, articles, totalCount, loadMore, formatTimeAgo }) => {
+const NewsSection = ({ boxName, type, articles, totalCount, loadMore }) => {
   return (
     <div className="bg-white rounded-xl mt-5">
       <span className="mx-4 px-2 py-0 pb-1 mt-2 text-sx rounded text-white inline-block bg-blue-500 ">{boxName}</span>
@@ -16,7 +16,7 @@ const NewsSection = ({ boxName, type, articles, totalCount, loadMore, formatTime
               key={index}
               title={article.title}
               description={article.description}
-              timeAgo={formatTimeAgo(article.publishedAt)}
+              timeAgo={article.publishedAt}
               url={article.url}
               image={article.urlToImage || "https://via.placeholder.com/150"}
             />
