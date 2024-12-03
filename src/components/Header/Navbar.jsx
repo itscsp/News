@@ -14,21 +14,21 @@ const Navbar = () => {
       <div className="max-w-screen-xl px-4 py-2 mx-auto">
         <div className="flex items-center justify-center">
           <ul className="flex flex-row mt-0 space-x-8 rtl:space-x-reverse">
-            <li className="flex items-center space-x-2">
+            <li className="flex items-center space-x-2 capitalize">
               <Link to="/" className={getLinkClasses('/')} aria-current="page">
                 Home
               </Link>
             </li>
             <span className="text-gray-300 hidden sm:inline">|</span>
-            <li className="flex items-center space-x-2">
-              <Link to="/for-you" className={getLinkClasses('/for-you')}>
-                For You
+            <li className="flex items-center space-x-2 capitalize">
+              <Link to="/preference" className={getLinkClasses('/preference')}>
+              preference
               </Link>
             </li>
             <span className="text-gray-300 hidden sm:inline">|</span>
-            <li className="flex items-center space-x-2">
+            <li className="flex items-center space-x-2 capitalize">
               <Link to="/category" className={getLinkClasses('/category')}>
-                Topic
+                Category
               </Link>
             </li>
            

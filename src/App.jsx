@@ -12,11 +12,11 @@ const NotFoundPage = React.lazy(() => import("./pages/NotFoundPage"));
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <RootLayout />,
     children: [
       {
-        path: '/',
+        path: "/",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <HomePage />
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/for-you',
+        path: "/preference",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <ForYouPage />
@@ -32,7 +32,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/category',
+        path: "/category",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <CategoryPage />
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '*',
+        path: "*",
         element: (
           <Suspense fallback={<div>Loading...</div>}>
             <NotFoundPage />
@@ -55,11 +55,10 @@ function App() {
   return (
     <AppProvider>
       <NewsProvider>
-
-      <RouterProvider router={router} />;
+        <RouterProvider router={router} />;
       </NewsProvider>
     </AppProvider>
-  )
+  );
 }
 
 export default App;

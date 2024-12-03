@@ -136,7 +136,8 @@ const SearchForm = ({ divClass = "", btnClass = "" }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {searchResult.map((item, index) => (
               <NewsCard
-                key={index}
+              key={index}
+              source={item.source['name']}
                 title={item.title}
                 description={item.description}
                 timeAgo={formatTimeAgo(item.publishedAt)}
