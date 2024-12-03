@@ -14,13 +14,13 @@ const HomePage = () => {
   } = useAppContext();
 
   return (
-    <div className="py-14">
-      <h1 className="text-4xl font-bold text-gray-800 mt-4">Top Stories</h1>
+    <div className="py-6 md:py-14">
+      <h1 class="text-2xl md:text-4xl font-bold text-gray-800 mt-4">Top Stories</h1>
 
       {/* New York Times Section */}
       <div className="bg-white px-4 py-2 rounded mt-4">
         <div className="content text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mt-2">
+          <h2 className="text-xl md:text-3xl font-bold text-gray-800 mt-2">
             The New York Times
           </h2>
           <p className="text-md text-gray-600 mt-2 max-w-2xl mx-auto">

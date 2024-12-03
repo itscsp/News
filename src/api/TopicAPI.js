@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { NewsAPIRoot } from '../utils/helpers';
 
 export const fetchArticlesByTopic = async (category) => {
-  const url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${import.meta.env.VITE_API_KEY}`;
+  const url = `${NewsAPIRoot}/top-headlines?country=us&category=${category}&apiKey=${import.meta.env.VITE_API_KEY}`;
   
   try {
     const response = await axios.get(url);

@@ -1,3 +1,5 @@
+export const NewsAPIRoot = 'https://newsapi.org/v2';
+
 export const sliceTitle = (title, wordLimit = 10) => {
   const words = title.split(" ");
   const firstWords = words.slice(0, wordLimit).join(" ");

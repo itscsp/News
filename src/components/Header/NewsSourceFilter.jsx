@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import NewsCard from '../UI/NewsCard';
-import { COUNTRIES, formatTimeAgo } from '../../utils/helpers';
+import { COUNTRIES } from '../../utils/helpers';
 import Loader from '../Loader/Loader';
-import { IoNewspaper } from 'react-icons/io5';
+import { fetchArticlesBySource, fetchSources } from '../../api/SourceAPI';
+import SourceFilteredArticle from '../UI/SourceFilterArticle';
 
 const NewsSourceFilter = () => {
   // State management
@@ -18,25 +18,8 @@ const NewsSourceFilter = () => {
   // Fetch available news sources
   const fetchNewsSources = useCallback(async () => {
     try {
-      const response = await fetch(
-        `https://newsapi.org/v2/sources?language=en&country=${selectedCountry}&apiKey=${import.meta.env.VITE_API_KEY}`
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch news sources');
-      }
-
-      const data = await response.json();
-      // Filter out sources with limited country availability
-      const filteredSources = data.sources
-        .filter(source => 
-          source.language === 'en' && 
-          source.country === selectedCountry &&
-          source.url !== "https://news.google.com"
-        )
-        .slice(0, 10); // Limit to first 10 sources
-      
-      setSources(filteredSources);
+      const filteredSource = await fetchSources(selectedCountry);
+      setSources(filteredSource);
       setSelectedSource(null); // Reset selected source when country changes
       setArticles([]); // Clear previous articles
     } catch (err) {
@@ -51,21 +34,7 @@ const NewsSourceFilter = () => {
     setError(null);
 
     try {
-      // Get articles from a specific source
-      const response = await fetch(
-        `https://newsapi.org/v2/top-headlines?language=en&sortBy=publishedAt&sources=${sourceId}&apiKey=${import.meta.env.VITE_API_KEY}`
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch articles');
-      }
-
-      const data = await response.json();
-      // Filter out removed articles
-      const validArticles = data.articles.filter(
-        article => article.title !== '[Removed]'
-      );
-
+      const validArticles = await fetchArticlesBySource(sourceId)
       setArticles(validArticles);
     } catch (err) {
       console.error('Error fetching articles:', err);
@@ -134,43 +103,12 @@ const NewsSourceFilter = () => {
         {sources.length < 1 && <Loader text='Loading Source..' />}
       </div>
 
-      {/* Articles Display */}
-      <div>
-        {selectedSource && (
-          <h2 className="text-2xl font-semibold mb-4">
-            Articles from {selectedSource.name}
-          </h2>
-        )}
-
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader text="Loading articles..." />
-          </div>
-        ) : error ? (
-          <div className="text-red-500 text-center">{error}</div>
-        ) : articles.length > 0 ? (
-          <div className="grid md:grid-cols-2 gap-4">
-            {articles.map((article, index) => (
-              <NewsCard
-                key={index}
-                title={article.title}
-                description={article.description}
-                timeAgo={formatTimeAgo(article.publishedAt)}
-                url={article.url}
-                image={
-                  article.urlToImage || "https://via.placeholder.com/150"
-                }
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">
-            {selectedSource 
-              ? 'No articles found for this source.' 
-              : 'Select a news source to view articles.'}
-          </p>
-        )}
-      </div>
+      <SourceFilteredArticle
+        selectedSource={selectedSource}
+        isLoading={isLoading}
+        error={error}
+        articles={articles}
+      />
     </>
   );
 };

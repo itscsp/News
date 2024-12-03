@@ -1,9 +1,10 @@
 import axios from "axios";
+import { NewsAPIRoot } from "../utils/helpers";
 
 export const searchArticles = async (query, start, end) => {
   try {
     // Encode the query to handle special characters
-    const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&order=desc&from=${start.toISOString()}&to=${end.toISOString()}&searchIn=title,description,content&language=en&apiKey=${import.meta.env.VITE_API_KEY}`;
+    const url = `${NewsAPIRoot}/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&order=desc&from=${start.toISOString()}&to=${end.toISOString()}&searchIn=title,description,content&language=en&apiKey=${import.meta.env.VITE_API_KEY}`;
 
     // Use axios to fetch data
     const response = await axios.get(url);

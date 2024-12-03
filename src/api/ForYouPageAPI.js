@@ -1,9 +1,10 @@
 import axios from 'axios';
+import { NewsAPIRoot } from '../utils/helpers';
 
 export const fetchNewsSources = async (apiKey) => {
   try {
     const response = await axios.get(
-      `https://newsapi.org/v2/sources?language=en&apiKey=${apiKey}`
+      `${NewsAPIRoot}/sources?language=en&apiKey=${apiKey}`
     );
 
     if (response.status !== 200) {
@@ -32,14 +33,14 @@ export const fetchNewsData = async ({
     queryParams.append("page", page);
     queryParams.append("pageSize", pageSize);
 
-    let url = "https://newsapi.org/v2/top-headlines?language=en"; // Default URL
+    let url = `${NewsAPIRoot}/top-headlines?language=en`; // Default URL
 
     if (type === "category") {
       queryParams.append("category", value);
     }
     if (type === "country") {
       // Use the "everything" endpoint for country-based queries
-      url = "https://newsapi.org/v2/everything?language=en";
+      url = `${NewsAPIRoot}/everything?language=en`;
       queryParams.append("q", value);  // 'q' can be used to search articles by country
     }
     if (type === "source") {
