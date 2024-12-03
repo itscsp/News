@@ -105,7 +105,7 @@ const ForYouPage = () => {
                     onSelect={(country) =>
                       setSelectedPreferences((prev) => ({ ...prev, country }))
                     }
-                    getKey={(country) => country.code}
+                    getKey={(country) => country.name}
                     getLabel={(country) => country.name}
                   />
                 ))}
