@@ -11,7 +11,7 @@ const NewsCard = ({ source, title, timeAgo, image, url }) => {
       />
       <div className="flex flex-col justify-between w-full">
         <div>
-          <p className="text-sm text-gray-500">{source}</p>
+          <p className="text-sm text-blue-500 uppercase">{source}</p>
           <h2 className="text-base font-semibold text-gray-800">{title}</h2>
         </div>
         <div className="flex items-center justify-between">

@@ -1,19 +1,22 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { COUNTRIES } from '../../utils/helpers';
-import Loader from '../Loader/Loader';
-import { fetchArticlesBySource, fetchSources } from '../../api/SourceAPI';
-import SourceFilteredArticle from '../UI/SourceFilterArticle';
+import React, { useState, useEffect, useCallback } from "react";
+import { COUNTRIES } from "../../utils/helpers";
+import Loader from "../Loader/Loader";
+import { fetchArticlesBySource, fetchSources } from "../../api/SourceAPI";
+import SourceFilteredArticle from "../UI/SourceFilterArticle";
 
 const NewsSourceFilter = () => {
   // State management
   const [sources, setSources] = useState([]);
   const [selectedSource, setSelectedSource] = useState(null);
-  const [selectedCountry, setSelectedCountry] = useState('us');
+  const [selectedCountry, setSelectedCountry] = useState("us");
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(10);
 
-
+  const handleShowMore = () => {
+    setVisibleCount((prevCount) => (prevCount === 10 ? sources.length : 10)); // Toggle between 10 and all
+  };
 
   // Fetch available news sources
   const fetchNewsSources = useCallback(async () => {
@@ -23,8 +26,8 @@ const NewsSourceFilter = () => {
       setSelectedSource(null); // Reset selected source when country changes
       setArticles([]); // Clear previous articles
     } catch (err) {
-      console.error('Error fetching news sources:', err);
-      setError('Failed to load news sources');
+      console.error("Error fetching news sources:", err);
+      setError("Failed to load news sources");
     }
   }, [selectedCountry]);
 
@@ -34,11 +37,11 @@ const NewsSourceFilter = () => {
     setError(null);
 
     try {
-      const validArticles = await fetchArticlesBySource(sourceId)
+      const validArticles = await fetchArticlesBySource(sourceId);
       setArticles(validArticles);
     } catch (err) {
-      console.error('Error fetching articles:', err);
-      setError('Failed to load articles');
+      console.error("Error fetching articles:", err);
+      setError("Failed to load articles");
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +68,10 @@ const NewsSourceFilter = () => {
     <>
       {/* Country Selection Dropdown */}
       <div className="mb-4">
-        <label htmlFor="country-select" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="country-select"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Select Country
         </label>
         <select
@@ -82,26 +88,35 @@ const NewsSourceFilter = () => {
         </select>
       </div>
 
-      {/* Sources Filter Buttons */}
+     
       <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto">
-        {sources.map((source) => (
+        {sources.slice(0, visibleCount).map((source) => (
           <button
             key={source.id}
             onClick={() => handleSourceSelect(source)}
-            className={`
-              px-2 py-1 text-sm rounded-lg transition-colors 
-              ${selectedSource?.id === source.id 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-              }
-              whitespace-nowrap
-            `}
+            className={`px-2 py-1 text-sm rounded-lg transition-colors ${
+              selectedSource?.id === source.id
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+            } whitespace-nowrap`}
           >
             {source.name}
           </button>
         ))}
-        {sources.length < 1 && <Loader text='Loading Source..' />}
+        {sources.length === 0 && <Loader text="Loading Source..." />}
+      {/* Show More Button */}
+      {sources.length > 10 && (
+
+          <button
+            onClick={handleShowMore}
+            className="px-2 py-1 text-sm  font-semibold hover:text-white  rounded-lg hover:bg-blue-700 "
+          >
+            {visibleCount === 10 ? "Show More" : "Show Less"}
+          </button>
+      
+      )}
       </div>
+
 
       <SourceFilteredArticle
         selectedSource={selectedSource}
