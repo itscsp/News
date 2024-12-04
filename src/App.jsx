@@ -3,6 +3,7 @@ import React, { Suspense } from "react";
 import RootLayout from "./pages/RootLayout";
 import { AppProvider } from "./context/AppContext";
 import { NewsProvider } from "./context/NewsContext";
+import Loader from "./components/Loader/Loader";
 
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const ForYouPage = React.lazy(() => import("./pages/ForYouPage"));
@@ -25,7 +26,7 @@ const router = createBrowserRouter([
       {
         path: "/preference",
         element: (
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<Loader /> }>
             <ForYouPage />
           </Suspense>
         ),
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
       {
         path: "/category",
         element: (
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<Loader />}>
             <CategoryPage />
           </Suspense>
         ),
@@ -41,7 +42,7 @@ const router = createBrowserRouter([
       {
         path: "*",
         element: (
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<Loader />}>
             <NotFoundPage />
           </Suspense>
         ),
@@ -54,7 +55,7 @@ function App() {
   return (
     <AppProvider>
       <NewsProvider>
-        <RouterProvider router={router} />;
+        <RouterProvider router={router} />
       </NewsProvider>
     </AppProvider>
   );

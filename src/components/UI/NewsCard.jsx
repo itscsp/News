@@ -15,7 +15,7 @@ const NewsCard = ({ source, title, timeAgo, image, url }) => {
           <p className="text-xs text-blue-500 uppercase">{source}</p>
           <h2 className="text-base font-semibold text-gray-800">{title}</h2>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between">
         <p className="text-sm text-gray-400">{formatTimeAgo(timeAgo)}</p>
        
         <Link

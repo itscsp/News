@@ -4,7 +4,7 @@ import { fetchNewsData, fetchNewsSources } from "../api/ForYouPageAPI";
 export const NewsContext = createContext();
 
 export const NewsProvider = ({ children }) => {
-  const apiKey = import.meta.env.VITE_API_KEY;
+  const apiKey = import.meta.env.VITE_NEWS_API_KEY;
 
   const [sources, setSources] = useState([]);
   const [fetchedData, setFetchedData] = useState({

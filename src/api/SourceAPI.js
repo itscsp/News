@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { NewsAPIRoot } from '../utils/helpers';
 
-const apiKey = import.meta.env.VITE_API_KEY;
+const apiKey = import.meta.env.VITE_NEWS_API_KEY;
 
 export const fetchSources = async (country) => {
   const response = await axios.get(`${NewsAPIRoot}/sources`, {

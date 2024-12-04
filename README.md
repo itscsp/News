@@ -53,7 +53,7 @@ This is a **News Aggregator Application** built with **React.js**, designed to p
 2. **Run the Docker Container:**
    ```bash
     docker run -d \
-    -e VITE_API_KEY=<add-api-key> \
+    -e VITE_NEWS_API_KEY=<add-api-key> \
     -e VITE_NYT_API_KEY=<add-api-key> \
     -e VITE_GUARDIAN_API_KEY=<add-api-key> \
     -p 5173:5173 chethanspoojary/news-aggregator-task:latest

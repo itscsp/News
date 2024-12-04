@@ -18,7 +18,7 @@ const CategoryPage = () => {
   return (
     <div className="md:flex pt-10">
       {/* Tabs Section */}
-      <ul className="flex flex-col space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0">
+      <ul className="flex flex-wrap md:flex-col md:space-y-4 text-sm font-medium text-gray-500 dark:text-gray-400 md:me-4 mb-4 md:mb-0">
         {categories.map((category) => (
           <li key={category.id}>
             <button
